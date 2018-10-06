@@ -43,37 +43,62 @@ isPalindrome xs = meuReverso xs == xs
 - Remove os elementos duplicados de uma lista. Ex: compress [2,5,8,2,1,8] = [2,5,8,1]
 - Voce pode usar a funcao elem de Haskell
 -}
-compress xs = 
+compress [] = []
+compress xs = conjunto ([head xs]) (tail xs)
+conjunto z [] = z
+conjunto z x 
+             | elem (head x) z  = conjunto z (tail x)
+             | otherwise = conjunto (z ++ [head x]) (tail x)
+
 
 {-
 - Varre a lista da esquerda para a direita e junta os elementos iguais. Ex: compact [2,5,8,2,1,8] = [2,2,5,8,8,1]
 - Voce pode usar funcoes sobre listas como : (cons), filter, etc.
 -}
-compact xs = undefined
+compact [] = []
+compact xs  = z ++ compact (removeItem k xs)
+        where k = head xs
+              z = [x|x<-xs,x == k]
+
+{-Remove as ocorrencias de um item da lista -}
+removeItem _ [] = []
+removeItem x (y:ys) | x == y    = removeItem x ys
+                    | otherwise = y : removeItem x ys
 
 
 {-
 - Retorna uma lista de pares com os elementos e suas quantidades. Ex: encode [2,2,2,3,4,2,5,2,4,5] = [(2,5),(3,1),(4,2),(5,2)]
 - Voce pode usar funcoes sobre listas como : (cons), filter, etc.
 -}
-encode xs = undefined
+encode [] = []
+encode xs = [(k,j)] ++ encode(n)
+            where k = head xs
+                  n = removeItem k (tail xs)
+                  j = meuLength [x|x <-xs,x == k]
 
 {-
 - Divide uma lista em duas sublistas onde o ponto de divisao é dado. Ex: split [3,6,1,9,4] 3 = [[3,6,1],[9,4]]
 -}
-split xs i = undefined
+split xs n = z : [l]
+    where z = h xs n
+          l = reverse(h (reverse xs) ((meuLength xs)-n))
+h xs 0 = []
+h xs i = [(head xs)] ++ h(tail xs) (i-1)
 
 {-
 - Extrai um pedaço (slice) de uma lista especificado por um intervalo. 
 - Ex: slice [3,6,1,9,4] 2 4 = [6,1,9]
 -}
-slice xs imin imax = undefined
+slice xs imin imax = [x |x<-xs,(not)(x`elem`k),(not)(x`elem`j)]
+                where  k = take (imin-1) xs
+                       j = drop (imax) xs
 
 {-
 - Insere um elemento em uma posicao especifica de uma lista. 
 - Ex: insertAt 7 4 [3,6,1,9,4] = [3,6,1,7,9,4]
 -}
-insertAt el pos xs = undefined
+insertAt el pos xs = take (pos-1) xs ++ (el: (drop (pos) xs) )
+                    where w = meuLength xs
 
 {-
 - Ordena uma lista em ordem crescente. Voce deve seguir a ideia do selectionsort onde os elementos 
@@ -93,26 +118,30 @@ sort xs = x:ys
 {-
 - Calcula a soma de todos os elementos de uma lista usando foldr.
 -}
-mySum xs = undefined
+mySum xs = foldr (+) 0 xs
 
 {-
 - Dada a funcao max que retorna o maximo entre dois numeros, escreva uma funcao que usa a função
 - foldr e max para retornar o maximo de uma lista se a lista não é vazia.
 -}
-maxList xs = undefined
+maxList xs = foldr(max) (head xs) xs
 
 {-
 - Transforma uma string em uma palindrome acrescentando o reverso da string ao seu final sem usar a funcao reverse. 
 - Ex: buildPalindrome [1,2,3] = [1,2,3,3,2,1]. 
 -}
-buildPalindrome xs = undefined
+buildPalindrome xs = xs ++ (r xs)
+
+r [] = []
+r xs =  last xs : r (init xs)
+
 
 {-
 - Computa a media dos elementos de uma lista de numeros, sem usar nenhuma funcao pronta de listas.
 -}
-mean xs = undefined
+mean xs = (mySum xs)/(meuLength xs)
 
 {-
 - Escreva a funcao myAppend que faz o append de uma lista xs com a lista ys, usando a função foldr. 
 -}
-myAppend xs ys = undefined
+myAppend xs ys = foldr(:) ys xs
